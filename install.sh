@@ -4,10 +4,10 @@
 #  Fully automated setup: Docker, firewall, server, camouflage page
 #
 #  Usage (one command on a fresh Ubuntu VPS):
-#    wget -qO- https://github.com/4eSyH/snake-vpn/releases/latest/download/install.sh | sudo bash
+#    curl -fsSL https://raw.githubusercontent.com/4eSyH/snake-vpn/main/install.sh | sudo bash
 #
 #  Or step-by-step:
-#    wget https://github.com/4eSyH/snake-vpn/releases/latest/download/install.sh
+#    wget https://raw.githubusercontent.com/4eSyH/snake-vpn/main/install.sh
 #    chmod +x install.sh
 #    sudo ./install.sh
 # ═══════════════════════════════════════════════════════════════════
