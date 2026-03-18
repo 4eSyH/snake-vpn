@@ -75,14 +75,13 @@ echo -e "${BOLD}  ║  This script will:                                 ║${NC
 echo -e "${BOLD}  ║    1. Harden your server (firewall, SSH)           ║${NC}"
 echo -e "${BOLD}  ║    2. Install Docker                               ║${NC}"
 echo -e "${BOLD}  ║    3. Set up Snake VPN with Let's Encrypt          ║${NC}"
-echo -e "${BOLD}  ║    4. Configure camouflage website                 ║${NC}"
-echo -e "${BOLD}  ║    5. Give you admin credentials for Manager       ║${NC}"
+echo -e "${BOLD}  ║    4. Give you admin credentials for Manager       ║${NC}"
 echo -e "${BOLD}  ║                                                    ║${NC}"
 echo -e "${BOLD}  ╚════════════════════════════════════════════════════╝${NC}"
 echo ""
 echo -e "  ${DIM}Before starting, make sure you have:${NC}"
 echo -e "  ${DIM}  • A domain name pointed to this server's IP (A record)${NC}"
-echo -e "  ${DIM}  • Ports 80 and 443 available (not used by another service)${NC}"
+echo -e "  ${DIM}  • Ports 80 and 3389 available (not used by another service)${NC}"
 echo ""
 divider
 read -rp "  Press Enter to continue or Ctrl+C to cancel..."
@@ -91,7 +90,7 @@ echo ""
 # ═══════════════════════════════════════════════════════════════════
 #  STEP 1: GATHER INFORMATION
 # ═══════════════════════════════════════════════════════════════════
-step "Step 1/5: Configuration"
+step "Step 1/4: Configuration"
 
 # Detect server IP
 SERVER_IP=$(curl -4 -s --connect-timeout 5 ifconfig.me 2>/dev/null || \
@@ -136,40 +135,45 @@ NAT_IFACE=${NAT_IFACE:-eth0}
 ok "Network interface: ${NAT_IFACE} (auto-detected)"
 
 # ═══════════════════════════════════════════════════════════════════
-#  STEP 2: CHOOSE CAMOUFLAGE WEBSITE
+#  STEP 2: CAMOUFLAGE WEBSITE (disabled — not used with current protocol)
 # ═══════════════════════════════════════════════════════════════════
-step "Step 2/5: Camouflage Website"
-echo ""
-echo -e "  When someone visits your server in a browser, they'll see"
-echo -e "  a regular website. Choose a disguise:"
-echo ""
-echo -e "  ${BOLD}1)${NC}  ${MAGENTA}CloudPulse${NC}       — Cloud monitoring SaaS (default)"
-echo -e "  ${BOLD}2)${NC}  ${MAGENTA}Tech Blog${NC}        — Personal engineering blog"
-echo -e "  ${BOLD}3)${NC}  ${MAGENTA}IT Consulting${NC}    — Corporate IT consulting firm"
-echo -e "  ${BOLD}4)${NC}  ${MAGENTA}Photography${NC}      — Photographer portfolio (dark theme)"
-echo -e "  ${BOLD}5)${NC}  ${MAGENTA}Restaurant${NC}       — Farm-to-table restaurant"
-echo -e "  ${BOLD}6)${NC}  ${MAGENTA}SaaS Startup${NC}     — API gateway product page"
-echo -e "  ${BOLD}7)${NC}  ${MAGENTA}Design Agency${NC}    — Digital design agency"
-echo ""
-read -rp "$(echo -e "  ${CYAN}Choose camouflage${NC} [1-7, default 1]: ")" CAMO_CHOICE
-CAMO_CHOICE=${CAMO_CHOICE:-1}
-
-case "$CAMO_CHOICE" in
-    1) CAMO_NAME="cloudpulse"   ; CAMO_SOURCE=""            ;;
-    2) CAMO_NAME="blog"         ; CAMO_SOURCE="blog"        ;;
-    3) CAMO_NAME="consulting"   ; CAMO_SOURCE="consulting"  ;;
-    4) CAMO_NAME="photography"  ; CAMO_SOURCE="photography" ;;
-    5) CAMO_NAME="restaurant"   ; CAMO_SOURCE="restaurant"  ;;
-    6) CAMO_NAME="startup"      ; CAMO_SOURCE="startup"     ;;
-    7) CAMO_NAME="agency"       ; CAMO_SOURCE="agency"      ;;
-    *) CAMO_NAME="cloudpulse"   ; CAMO_SOURCE=""            ;;
-esac
-ok "Camouflage: ${CAMO_NAME}"
+# Camouflage website selection is disabled. All connections use protocol
+# disguise (RDP/SSH/IMAP/Modbus/ShadowSnake), so serving a fake website
+# on the VPN port is not needed. To re-enable, uncomment the block below.
+#
+# step "Step 2/5: Camouflage Website"
+# echo ""
+# echo -e "  When someone visits your server in a browser, they'll see"
+# echo -e "  a regular website. Choose a disguise:"
+# echo ""
+# echo -e "  ${BOLD}1)${NC}  ${MAGENTA}CloudPulse${NC}       — Cloud monitoring SaaS (default)"
+# echo -e "  ${BOLD}2)${NC}  ${MAGENTA}Tech Blog${NC}        — Personal engineering blog"
+# echo -e "  ${BOLD}3)${NC}  ${MAGENTA}IT Consulting${NC}    — Corporate IT consulting firm"
+# echo -e "  ${BOLD}4)${NC}  ${MAGENTA}Photography${NC}      — Photographer portfolio (dark theme)"
+# echo -e "  ${BOLD}5)${NC}  ${MAGENTA}Restaurant${NC}       — Farm-to-table restaurant"
+# echo -e "  ${BOLD}6)${NC}  ${MAGENTA}SaaS Startup${NC}     — API gateway product page"
+# echo -e "  ${BOLD}7)${NC}  ${MAGENTA}Design Agency${NC}    — Digital design agency"
+# echo ""
+# read -rp "$(echo -e "  ${CYAN}Choose camouflage${NC} [1-7, default 1]: ")" CAMO_CHOICE
+# CAMO_CHOICE=${CAMO_CHOICE:-1}
+#
+# case "$CAMO_CHOICE" in
+#     1) CAMO_NAME="cloudpulse"   ; CAMO_SOURCE=""            ;;
+#     2) CAMO_NAME="blog"         ; CAMO_SOURCE="blog"        ;;
+#     3) CAMO_NAME="consulting"   ; CAMO_SOURCE="consulting"  ;;
+#     4) CAMO_NAME="photography"  ; CAMO_SOURCE="photography" ;;
+#     5) CAMO_NAME="restaurant"   ; CAMO_SOURCE="restaurant"  ;;
+#     6) CAMO_NAME="startup"      ; CAMO_SOURCE="startup"     ;;
+#     7) CAMO_NAME="agency"       ; CAMO_SOURCE="agency"      ;;
+#     *) CAMO_NAME="cloudpulse"   ; CAMO_SOURCE=""            ;;
+# esac
+# ok "Camouflage: ${CAMO_NAME}"
+ok "Camouflage website: skipped (not used with protocol disguise)"
 
 # ═══════════════════════════════════════════════════════════════════
 #  STEP 3: HARDEN SERVER
 # ═══════════════════════════════════════════════════════════════════
-step "Step 3/5: Server Hardening"
+step "Step 2/4: Server Hardening"
 
 # 3.1 System updates
 info "Updating system packages..."
@@ -201,9 +205,9 @@ ufw default deny incoming > /dev/null 2>&1
 ufw default allow outgoing > /dev/null 2>&1
 ufw allow 22/tcp comment 'SSH' > /dev/null 2>&1
 ufw allow 80/tcp comment 'HTTP (ACME)' > /dev/null 2>&1
-ufw allow 443/tcp comment 'HTTPS (VPN)' > /dev/null 2>&1
+ufw allow 3389/tcp comment 'Snake VPN' > /dev/null 2>&1
 ufw --force enable > /dev/null 2>&1
-ok "Firewall: SSH (22), HTTP (80), HTTPS (443) — all else blocked"
+ok "Firewall: SSH (22), HTTP (80), VPN (3389) — all else blocked"
 
 # 3.5 Harden SSH
 SSHD_CONFIG="/etc/ssh/sshd_config"
@@ -249,7 +253,7 @@ ok "Kernel: IP forwarding enabled, network hardened, buffers optimized"
 # ═══════════════════════════════════════════════════════════════════
 #  STEP 4: INSTALL DOCKER & DEPLOY
 # ═══════════════════════════════════════════════════════════════════
-step "Step 4/5: Docker & Deployment"
+step "Step 3/4: Docker & Deployment"
 
 # 4.1 Install Docker
 if command -v docker &>/dev/null; then
@@ -276,7 +280,7 @@ ADMIN_TOKEN=$(openssl rand -hex 32)
 # 4.4 Create server.yaml
 cat > server.yaml <<YAML
 server:
-  listen: ":443"
+  listen: ":3389"
   domain: "${DOMAIN}"
 
 tls:
@@ -296,6 +300,11 @@ tunnel:
     enabled: true
     min_size: 0
     max_size: 256
+  obfuscation:             # disabled by default — adds jitter/batching to confuse DPI
+    enabled: false
+    # jitter_ms: 50
+    # batch_size: 3
+    # noise_percent: 10
 
 network:
   subnet: "10.7.0.0/24"
@@ -305,9 +314,10 @@ network:
     - "8.8.8.8"
   nat_interface: "${NAT_IFACE}"
 
-camouflage:
-  static_dir: "/opt/snake-vpn/web"
-  index_file: "index.html"
+# camouflage website is disabled — protocol disguise is used instead
+# camouflage:
+#   static_dir: "/opt/snake-vpn/web"
+#   index_file: "index.html"
 
 logging:
   level: "info"
@@ -328,11 +338,10 @@ services:
     container_name: snake-vpn
     restart: unless-stopped
     ports:
-      - "443:443"
-      - "80:80"
+      - "3389:3389"
+      - "80:80"       # needed for Let's Encrypt ACME challenge
     volumes:
       - ./server.yaml:/etc/snake-vpn/server.yaml:ro
-      - ./web:/opt/snake-vpn/web:ro
       - vpn-data:/var/lib/snake-vpn
     cap_add:
       - NET_ADMIN
@@ -346,7 +355,7 @@ services:
         max-size: "50m"
         max-file: "3"
     healthcheck:
-      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://localhost:80/"]
+      test: ["CMD", "sh", "-c", "echo | nc -w2 localhost 3389 || exit 1"]
       interval: 30s
       timeout: 5s
       retries: 3
@@ -356,61 +365,11 @@ volumes:
 COMPOSE
 ok "docker-compose.yml created"
 
-# 4.6 Download camouflage website
-mkdir -p "${INSTALL_DIR}/web"
-
-if [[ -z "$CAMO_SOURCE" ]]; then
-    # Default CloudPulse — download from repo
-    info "Downloading camouflage: CloudPulse..."
-    curl -fsSL "${GITHUB_RAW}/server/web/index.html" -o "${INSTALL_DIR}/web/index.html" 2>/dev/null || true
-    curl -fsSL "${GITHUB_RAW}/server/web/style.css"  -o "${INSTALL_DIR}/web/style.css"  2>/dev/null || true
-    # Fallback if download failed
-    if [[ ! -s "${INSTALL_DIR}/web/index.html" ]]; then
-        cat > "${INSTALL_DIR}/web/index.html" <<'FALLBACK_HTML'
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CloudPulse — Cloud Monitoring</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: -apple-system, sans-serif; color: #1a1a2e; background: #fafafa; }
-        header { background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.1); padding: 1rem 2rem; }
-        .logo { font-size: 1.5rem; font-weight: 700; color: #4361ee; }
-        .hero { text-align: center; padding: 6rem 2rem; max-width: 800px; margin: 0 auto; }
-        .hero h1 { font-size: 3rem; margin-bottom: 1rem; }
-        .hero p { font-size: 1.2rem; color: #666; margin-bottom: 2rem; }
-        .btn { display: inline-block; padding: 0.75rem 2rem; border-radius: 8px; text-decoration: none; font-weight: 600; }
-        .btn-primary { background: #4361ee; color: #fff; }
-        footer { text-align: center; padding: 2rem; color: #999; }
-    </style>
-</head>
-<body>
-    <header><div class="logo">CloudPulse</div></header>
-    <main>
-        <section class="hero">
-            <h1>Monitor Your Infrastructure in Real-Time</h1>
-            <p>Comprehensive monitoring, alerting, and analytics for your cloud infrastructure.</p>
-            <a href="#" class="btn btn-primary">Start Free Trial</a>
-        </section>
-    </main>
-    <footer><p>&copy; 2024 CloudPulse Inc. All rights reserved.</p></footer>
-</body>
-</html>
-FALLBACK_HTML
-    fi
-else
-    info "Downloading camouflage: ${CAMO_NAME}..."
-    curl -fsSL "${GITHUB_RAW}/server/web-examples/${CAMO_SOURCE}/index.html" \
-        -o "${INSTALL_DIR}/web/index.html" 2>/dev/null
-    if [[ ! -s "${INSTALL_DIR}/web/index.html" ]]; then
-        warn "Failed to download ${CAMO_NAME} template, using default"
-        curl -fsSL "${GITHUB_RAW}/server/web/index.html" -o "${INSTALL_DIR}/web/index.html" 2>/dev/null || true
-        curl -fsSL "${GITHUB_RAW}/server/web/style.css"  -o "${INSTALL_DIR}/web/style.css"  2>/dev/null || true
-    fi
-fi
-ok "Camouflage website installed"
+# 4.6 Camouflage website download (disabled — not used with protocol disguise)
+# mkdir -p "${INSTALL_DIR}/web"
+# ... camouflage download code commented out ...
+# To re-enable, restore the download block from git history.
+ok "Camouflage website: skipped"
 
 # 4.7 Pull and start
 info "Pulling Docker image (this may take a minute)..."
@@ -445,7 +404,7 @@ fi
 # ═══════════════════════════════════════════════════════════════════
 #  STEP 5: SAVE CREDENTIALS & SHOW RESULTS
 # ═══════════════════════════════════════════════════════════════════
-step "Step 5/5: Done!"
+step "Step 4/4: Done!"
 
 # Save credentials
 CREDS_FILE="${INSTALL_DIR}/credentials.txt"
@@ -455,7 +414,6 @@ Snake VPN — Credentials
 Installed:  $(date -u '+%Y-%m-%d %H:%M:%S UTC')
 Domain:     ${DOMAIN}
 Server IP:  ${SERVER_IP}
-Camouflage: ${CAMO_NAME}
 
 Admin Token: ${ADMIN_TOKEN}
 
@@ -479,7 +437,6 @@ echo -e "${GREEN}  ╚═══════════════════�
 echo ""
 echo -e "  ${BOLD}Server URL:${NC}    https://${DOMAIN}"
 echo -e "  ${BOLD}Server IP:${NC}     ${SERVER_IP}"
-echo -e "  ${BOLD}Camouflage:${NC}    ${CAMO_NAME}"
 echo -e "  ${BOLD}Install dir:${NC}   ${INSTALL_DIR}"
 echo ""
 divider
